@@ -132,7 +132,7 @@ async function cargarLibros(item, container) {
     } else {
       container.innerHTML = libros.map(l => `
         <div class="col-md-4 mb-3">
-          <div class="card h-100">
+          <div class="card h-100 book-card">
             <img src="${l.imagen_url || '/assets/images/libro-placeholder.jpg'}" class="card-img-top" alt="${l.titulo}">
             <div class="card-body">
               <h6 class="card-title">${l.titulo}</h6>
