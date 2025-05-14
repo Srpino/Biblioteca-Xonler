@@ -67,34 +67,65 @@ function renderBooksPage() {
   const librosGrid = document.getElementById('librosGrid');
   const start = (currentPage - 1) * pageSize;
   const pageItems = allBooks.slice(start, start + pageSize);
+  const isListView = librosGrid.className === 'list-view';
 
   librosGrid.innerHTML = '';
   pageItems.forEach(libro => {
-    const col = document.createElement('div');
-    col.className = 'col-md-4 mb-4';
-    col.innerHTML = `
-      <div class="card h-100 book-card"
-           data-bs-toggle="modal"
-           data-bs-target="#bookDetailModal"
-           data-id="${libro.id}"
-           style="cursor:pointer;">
-        <img src="${libro.imagen_url || '/assets/images/libro-placeholder.jpg'}"
-             class="card-img-top"
-             alt="${libro.titulo}">
-        <div class="card-body">
-          <h5 class="card-title">${libro.titulo}</h5>
-          <p class="card-text">Autor: ${libro.autor}</p>
-          <p class="card-text"><small class="text-muted">ISBN: ${libro.isbn || 'N/A'}</small></p>
-          <span class="badge bg-secondary">${libro.categoria}</span>
+    if (isListView) {
+      // Modo de vista de lista compacta
+      const item = document.createElement('div');
+      item.className = 'book-list-item';
+      item.setAttribute('data-bs-toggle', 'modal');
+      item.setAttribute('data-bs-target', '#bookDetailModal');
+      item.setAttribute('data-id', libro.id);
+      item.innerHTML = `
+        <div class="book-img-container">
+          <img src="${libro.imagen_url || '/assets/images/libro-placeholder.jpg'}" 
+               alt="${libro.titulo}">
         </div>
-        <div class="card-footer">
+        <div class="book-info">
+          <div>
+            <div class="book-title">${libro.titulo}</div>
+            <div class="book-author">${libro.autor}</div>
+            <div class="book-isbn">ISBN: ${libro.isbn || 'N/A'}</div>
+          </div>
+        </div>
+        <div class="book-status">
           <small class="text-${libro.disponibilidad ? 'success' : 'danger'}">
             ${libro.disponibilidad ? 'Disponible' : 'Prestado'}
           </small>
+          <span class="badge bg-secondary book-category">${libro.categoria}</span>
         </div>
-      </div>
-    `;
-    librosGrid.appendChild(col);
+      `;
+      librosGrid.appendChild(item);
+    } else {
+      // Modo de vista de cuadrícula (original)
+      const col = document.createElement('div');
+      col.className = 'col-md-4 mb-4';
+      col.innerHTML = `
+        <div class="card h-100 book-card"
+             data-bs-toggle="modal"
+             data-bs-target="#bookDetailModal"
+             data-id="${libro.id}"
+             style="cursor:pointer;">
+          <img src="${libro.imagen_url || '/assets/images/libro-placeholder.jpg'}"
+               class="card-img-top"
+               alt="${libro.titulo}">
+          <div class="card-body">
+            <h5 class="card-title">${libro.titulo}</h5>
+            <p class="card-text">Autor: ${libro.autor}</p>
+            <p class="card-text"><small class="text-muted">ISBN: ${libro.isbn || 'N/A'}</small></p>
+            <span class="badge bg-secondary">${libro.categoria}</span>
+          </div>
+          <div class="card-footer">
+            <small class="text-${libro.disponibilidad ? 'success' : 'danger'}">
+              ${libro.disponibilidad ? 'Disponible' : 'Prestado'}
+            </small>
+          </div>
+        </div>
+      `;
+      librosGrid.appendChild(col);
+    }
   });
 
   renderPagination();
@@ -146,11 +177,13 @@ function initLibrosVisualizacion() {
     librosGrid.className = 'row';
     viewGridBtn.classList.add('active');
     viewListBtn.classList.remove('active');
+    renderBooksPage();
   };
   viewListBtn.onclick = () => {
     librosGrid.className = 'list-view';
     viewListBtn.classList.add('active');
     viewGridBtn.classList.remove('active');
+    renderBooksPage();
   };
 }
 

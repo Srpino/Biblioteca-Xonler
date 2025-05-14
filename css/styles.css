@@ -256,3 +256,75 @@ footer a.text-white:hover {
   --primary-accent: #7f5539;   /* marrón principal */
   --primary-accent-light: #ddbea9; /* tono más claro */
 }
+
+/* Vista de lista para libros */
+.list-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.list-view .book-list-item {
+  display: flex;
+  width: 100%;
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  transition: box-shadow 0.2s;
+  cursor: pointer;
+  background-color: #fff;
+}
+
+.list-view .book-list-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.list-view .book-img-container {
+  width: 80px;
+  min-width: 80px;
+  height: 80px;
+  padding: 0.5rem;
+}
+
+.list-view .book-img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.25rem;
+}
+
+.list-view .book-info {
+  display: flex;
+  flex-grow: 1;
+  padding: 0.5rem 1rem;
+  align-items: center;
+}
+
+.list-view .book-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+.list-view .book-author {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+  color: var(--color-medium);
+}
+
+.list-view .book-isbn {
+  font-size: 0.75rem;
+  color: var(--color-medium);
+}
+
+.list-view .book-status {
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  min-width: 100px;
+  justify-content: flex-end;
+}
+
+.list-view .book-category {
+  margin-left: 0.5rem;
+}
