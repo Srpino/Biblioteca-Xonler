@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <title>Mi Perfil - Xonler</title>
+</head>
+<body>
+    <header class="bg-dark text-white py-3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <h1 class="m-0">Xonler</h1>
+                </div>
+                <div class="col-md-8">
+                    <nav class="navbar navbar-expand-lg navbar-dark">
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav ms-auto">
+                                <li class="nav-item"><a class="nav-link" href="../index.html">Inicio</a></li>
+                                <li class="nav-item"><a class="nav-link" href="bibliotecas.html">Bibliotecas</a></li>
+                                <li class="nav-item"><a class="nav-link" href="libros.html">Libros</a></li>
+                                <li class="nav-item"><a class="nav-link" href="contacto.html">Contacto</a></li>
+                                <li class="nav-item"><a class="nav-link active" href="perfil.html">Mi Perfil</a></li>
+                                <li class="nav-item"><a class="nav-link text-danger" href="#" id="cerrarSesion">Cerrar Sesión</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <div class="row">
+            <!-- Sidebar con info del usuario -->
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="avatar mb-3">
+                            <i class="bi bi-person-circle" style="font-size: 5rem;"></i>
+                        </div>
+                        <h3 id="nombreUsuario">Cargando...</h3>
+                        <p class="text-muted" id="emailUsuario">Cargando...</p>
+
+                        <hr>
+                        <div class="text-start">
+                            <p><strong>Rol:</strong> <span id="rolUsuario">Cargando...</span></p>
+                            <p><strong>Préstamos activos:</strong> <span id="prestamosActivos">0</span></p>
+                            <p><strong>Total préstamos:</strong> <span id="totalPrestamos">0</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acciones -->
+                <div class="card shadow-sm mt-3">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title m-0">Acciones</h5>
+                    </div>
+                    <div class="card-body">
+                        <a href="libros.html" class="btn btn-primary d-block mb-2">Buscar libros</a>
+                        <button type="button" class="btn btn-outline-secondary d-block w-100" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">
+                            Editar perfil
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido principal -->
+            <div class="col-lg-8">
+                <!-- Pestañas -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="prestamos-tab" data-bs-toggle="tab" data-bs-target="#prestamos" type="button" role="tab" aria-controls="prestamos" aria-selected="true">
+                            Mis Préstamos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="reservas-tab" data-bs-toggle="tab" data-bs-target="#reservas" type="button" role="tab" aria-controls="reservas" aria-selected="false">
+                            Historial
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Contenido de las pestañas -->
+                <div class="tab-content" id="myTabContent">
+                    <!-- Pestaña de préstamos activos -->
+                    <div class="tab-pane fade show active" id="prestamos" role="tabpanel" aria-labelledby="prestamos-tab">
+                        <div class="card border-top-0 rounded-top-0">
+                            <div class="card-body">
+                                <h4 class="mb-3">Préstamos Activos</h4>
+                                <div id="prestamosList" class="row g-3">
+                                    <!-- Los préstamos se cargarán dinámicamente aquí -->
+                                    <div class="col-12 text-center py-5 text-muted" id="noPrestamos">
+                                        <i class="bi bi-book" style="font-size: 3rem;"></i>
+                                        <p class="mt-3">No tienes préstamos activos</p>
+                                        <a href="libros.html" class="btn btn-primary mt-2">Explorar libros disponibles</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña de historial de préstamos -->
+                    <div class="tab-pane fade" id="reservas" role="tabpanel" aria-labelledby="reservas-tab">
+                        <div class="card border-top-0 rounded-top-0">
+                            <div class="card-body">
+                                <h4 class="mb-4">Historial de Préstamos</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Libro</th>
+                                                <th>Biblioteca</th>
+                                                <th>Fecha préstamo</th>
+                                                <th>Fecha devolución</th>
+                                                <th>Estado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="historialPrestamos">
+                                            <!-- El historial se cargará dinámicamente aquí -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para editar perfil -->
+    <div class="modal fade" id="editarPerfilModal" tabindex="-1" aria-labelledby="editarPerfilModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarPerfilModalLabel">Editar Perfil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editarPerfilForm">
+                        <div class="mb-3">
+                            <label for="editNombre" class="form-label">Nombre completo</label>
+                            <input type="text" class="form-control" id="editNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label">Correo electrónico</label>
+                            <input type="email" class="form-control" id="editEmail" required>
+                        </div>
+                        <hr>
+                        <h6>Cambiar contraseña (opcional)</h6>
+                        <div class="mb-3">
+                            <label for="oldPassword" class="form-label">Contraseña actual</label>
+                            <input type="password" class="form-control" id="oldPassword">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">Nueva contraseña</label>
+                            <input type="password" class="form-control" id="newPassword">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmNewPassword" class="form-label">Confirmar nueva contraseña</label>
+                            <input type="password" class="form-control" id="confirmNewPassword">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="guardarPerfilBtn">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar devolución de libro -->
+    <div class="modal fade" id="devolverLibroModal" tabindex="-1" aria-labelledby="devolverLibroModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="devolverLibroModalLabel">Confirmar Devolución</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que quieres confirmar la devolución de este libro?</p>
+                    <p><strong>Libro: </strong><span id="nombreLibroDevolver"></span></p>
+                    <input type="hidden" id="prestamoIdDevolver">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirmarDevolucionBtn">Confirmar Devolución</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>Xonler</h4>
+                    <p>Red de bibliotecas estudiantiles</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Enlaces</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="../index.html" class="text-white">Inicio</a></li>
+                        <li><a href="bibliotecas.html" class="text-white">Bibliotecas</a></li>
+                        <li><a href="libros.html" class="text-white">Libros</a></li>
+                        <li><a href="contacto.html" class="text-white">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contacto</h5>
+                    <address>
+                        Email: info@xonler.edu<br>
+                        Teléfono: (123) 456-7890
+                    </address>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <small>&copy; 2025 Xonler - Red de Bibliotecas Estudiantiles</small>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="../js/perfil.js"></script>
+</body>
+</html> 

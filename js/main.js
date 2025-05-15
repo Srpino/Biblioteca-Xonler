@@ -6,6 +6,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
   console.log('Página actual:', currentPath, '| Es admin:', isAdmin);
 
+  // Evitar desplazamiento en todos los posibles botones de Registrarse
+  // Función para encontrar todos los enlaces que contienen el texto "Registrarse"
+  const registrarseLinks = Array.from(document.querySelectorAll('a'))
+    .filter(a => (a.href.includes('#') || a.href === '') && 
+                a.textContent.trim() === 'Registrarse');
+  
+  // También buscamos por otros selectores específicos
+  document.querySelectorAll('a[href="#"], a[href="#register"], a.registrarse').forEach(a => {
+    if (!registrarseLinks.includes(a)) {
+      registrarseLinks.push(a);
+    }
+  });
+  
+  // Agregamos el event listener a todos los enlaces encontrados
+  registrarseLinks.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      console.log('Clic en botón registrarse interceptado');
+      e.preventDefault();
+      
+      // Si este botón tiene asociado un comportamiento de tab, lo mantenemos
+      if (this.getAttribute('data-bs-toggle') === 'tab') {
+        const tabEl = document.querySelector(this.getAttribute('data-bs-target') || this.getAttribute('href'));
+        if (tabEl) {
+          const tab = new bootstrap.Tab(tabEl);
+          tab.show();
+        }
+      }
+    });
+  });
+
   // Import único de admin.js si estamos en admin
   if (isAdmin) {
     import('../js/admin/modules/admin.js')
