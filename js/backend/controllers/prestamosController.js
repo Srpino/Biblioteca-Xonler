@@ -37,39 +37,6 @@ async function obtenerPrestamoPorId(req, res) {
   }
 }
 
-// Obtener préstamos por usuario
-async function obtenerPrestamosPorUsuario(req, res) {
-  try {
-    const { id } = req.params;
-    const result = await pool.query(
-      `SELECT 
-         p.id, 
-         l.titulo AS libro,
-         l.autor,
-         l.imagen_url,
-         b.nombre AS biblioteca,
-         p.fecha_prestamo, 
-         p.fecha_devolucion,
-         CASE 
-           WHEN p.fecha_devolucion IS NULL THEN 'Activo'
-           ELSE 'Devuelto'
-         END AS estado
-       FROM prestamos p
-       JOIN usuarios u ON p.usuario_id = u.id
-       JOIN biblioteca_libros bl ON p.biblioteca_libro_id = bl.id
-       JOIN libros l ON bl.libro_id = l.id
-       JOIN bibliotecas b ON bl.biblioteca_id = b.id
-       WHERE p.usuario_id = $1
-       ORDER BY p.fecha_prestamo DESC`, 
-      [id]
-    );
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error al obtener préstamos por usuario:', error);
-    res.status(500).json({ error: 'Error al obtener los préstamos del usuario' });
-  }
-}
-
 // Crear un nuevo préstamo
 async function crearPrestamo(req, res) {
   try {
@@ -122,7 +89,6 @@ async function eliminarPrestamo(req, res) {
 module.exports = {
   obtenerPrestamos,
   obtenerPrestamoPorId,
-  obtenerPrestamosPorUsuario,
   crearPrestamo,
   actualizarPrestamo,
   eliminarPrestamo

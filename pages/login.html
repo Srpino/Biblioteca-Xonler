@@ -39,18 +39,18 @@
             <div class="col-md-6">
                 <div class="card login-card shadow-sm">
                     <div class="card-header bg-white border-0 pb-0">
-                        <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" role="tab" aria-controls="login" aria-selected="true">Iniciar Sesión</a>
+                        <ul class="nav nav-tabs card-header-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="login-tab" data-bs-toggle="tab" href="#login">Iniciar Sesión</a>
                             </li>
-                            <li class="nav-item" role="presentation">
-                                <a class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" role="tab" aria-controls="register" aria-selected="false" onclick="event.preventDefault();">Registrarse</a>
+                            <li class="nav-item">
+                                <a class="nav-link" id="register-tab" data-bs-toggle="tab" href="#register">Registrarse</a>
                             </li>
                         </ul>
                     </div>
                     <div class="card-body">
                         <div class="tab-content">
-                            <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
+                            <div class="tab-pane fade show active" id="login">
                                 <h3 class="mb-4">Iniciar Sesión</h3>
                                 <form id="loginForm">
                                     <div class="mb-3">
@@ -67,11 +67,11 @@
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-                                        <a href="javascript:void(0);" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
+                                        <a href="#" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
                                     </div>
                                 </form>
                             </div>
-                            <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
+                            <div class="tab-pane fade" id="register">
                                 <h3 class="mb-4">Crear Cuenta</h3>
                                 <form id="registerForm">
                                     <div class="mb-3">

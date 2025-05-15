@@ -4,9 +4,6 @@
 export default function initLibrosPage() {
   console.log('Página de libros inicializada');
 
-  // Verificar si hay un usuario logueado y actualizar menú
-  verificarUsuarioLogueado();
-
   // Inicializar la visualización
   initLibrosVisualizacion();
 
@@ -15,41 +12,12 @@ export default function initLibrosPage() {
 
   // Cargar libros al iniciar la página
   cargarLibros();
-
-  // Configurar eventos para préstamos
-  configurarPrestamoEventos();
 }
 
 // Estado global para paginación
 let allBooks = [];
 const pageSize = 9;
 let currentPage = 1;
-
-// Función para verificar si hay un usuario logueado
-function verificarUsuarioLogueado() {
-  const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
-  const loginMenuItem = document.getElementById('loginMenuItem');
-  const perfilMenuItem = document.getElementById('perfilMenuItem');
-  const logoutMenuItem = document.getElementById('logoutMenuItem');
-
-  if (usuarioActual) {
-    // Usuario logueado: mostrar perfil y cerrar sesión, ocultar login
-    loginMenuItem.classList.add('d-none');
-    perfilMenuItem.classList.remove('d-none');
-    logoutMenuItem.classList.remove('d-none');
-
-    // Configurar evento de cerrar sesión
-    document.getElementById('cerrarSesion').addEventListener('click', () => {
-      localStorage.removeItem('usuarioActual');
-      window.location.reload();
-    });
-  } else {
-    // Sin usuario: mostrar login, ocultar perfil y cerrar sesión
-    loginMenuItem.classList.remove('d-none');
-    perfilMenuItem.classList.add('d-none');
-    logoutMenuItem.classList.add('d-none');
-  }
-}
 
 // Función principal para cargar libros desde el backend y mostrarlos (con filtros opcionales)
 function cargarLibros(filtros = {}) {
@@ -234,23 +202,6 @@ function cargarBibliotecasEnSelect() {
     .catch(err => console.error('Error libs:', err));
 }
 
-// Cargar bibliotecas en el modal
-function cargarBibliotecasModal() {
-  const modalBiblioteca = document.getElementById('modalBiblioteca');
-  if (!modalBiblioteca) return;
-  modalBiblioteca.innerHTML = '<option value="">Seleccione una biblioteca</option>';
-  
-  fetch('/api/bibliotecas')
-    .then(r => r.json())
-    .then(bibs => bibs.forEach(b => {
-      const o = document.createElement('option');
-      o.value = b.id; 
-      o.textContent = b.nombre;
-      modalBiblioteca.appendChild(o);
-    }))
-    .catch(err => console.error('Error al cargar bibliotecas:', err));
-}
-
 // Inicializar filtros y manejar envío
 function initLibrosFiltros() {
   cargarBibliotecasEnSelect();
@@ -272,147 +223,6 @@ function initLibrosFiltros() {
     if (bib.value !== 'todas') filters.biblioteca = bib.value;
     cargarLibros(filters);
   };
-}
-
-// Configurar eventos relacionados con préstamos
-function configurarPrestamoEventos() {
-  // Al abrir el modal de detalle de libro
-  const modalEl = document.getElementById('bookDetailModal');
-  if (modalEl) {
-    modalEl.addEventListener('show.bs.modal', async (event) => {
-      const trigger = event.relatedTarget;
-      const bookId = trigger?.getAttribute('data-id');
-      const titleEl = modalEl.querySelector('.modal-title');
-      const authorEl = modalEl.querySelector('#modalBookAuthor');
-      const isbnEl = modalEl.querySelector('#modalBookISBN');
-      const imgEl = modalEl.querySelector('#modalBookImg');
-      const descEl = modalEl.querySelector('#modalBookDescription');
-
-      // Cargar las bibliotecas disponibles
-      cargarBibliotecasModal();
-
-      titleEl.textContent = 'Cargando...';
-      authorEl.textContent = ''; 
-      isbnEl.textContent = '';
-      imgEl.src = '/assets/images/libro-placeholder.jpg';
-      imgEl.alt = 'Portada'; 
-      descEl.textContent = '';
-
-      if (!bookId) return;
-
-      try {
-        const res = await fetch(`/api/libros/${bookId}`);
-        if (!res.ok) throw new Error('No encontrado');
-        const libro = await res.json();
-        titleEl.textContent = libro.titulo || 'Sin título';
-        authorEl.textContent = libro.autor || 'Desconocido';
-        isbnEl.textContent = libro.isbn || 'N/A';
-        imgEl.src = libro.imagen_url || imgEl.src;
-        imgEl.alt = libro.titulo || 'Portada';
-        descEl.textContent = libro.descripcion || 'Sin descripción.';
-        
-        // Guardar ID del libro para préstamo
-        modalEl.setAttribute('data-libro-id', bookId);
-      } catch (err) {
-        titleEl.textContent = 'Error';
-        descEl.textContent = err.message;
-      }
-    });
-  }
-
-  // Botón de solicitar préstamo
-  const btnSolicitarPrestamo = document.getElementById('btnSolicitarPrestamo');
-  if (btnSolicitarPrestamo) {
-    btnSolicitarPrestamo.addEventListener('click', mostrarConfirmacionPrestamo);
-  }
-
-  // Botón de confirmar préstamo
-  const btnConfirmarPrestamo = document.getElementById('btnConfirmarPrestamo');
-  if (btnConfirmarPrestamo) {
-    btnConfirmarPrestamo.addEventListener('click', realizarPrestamo);
-  }
-}
-
-// Función para mostrar confirmación de préstamo
-function mostrarConfirmacionPrestamo() {
-  // Verificar si hay usuario logueado
-  const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
-  if (!usuarioActual) {
-    // Mostrar modal de inicio de sesión requerido
-    const loginModal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
-    loginModal.show();
-    return;
-  }
-
-  const modalDetalleLibro = document.getElementById('bookDetailModal');
-  const libroId = modalDetalleLibro.getAttribute('data-libro-id');
-  const libroTitulo = modalDetalleLibro.querySelector('.modal-title').textContent;
-  const bibliotecaSelect = document.getElementById('modalBiblioteca');
-  const bibliotecaId = bibliotecaSelect.value;
-  const bibliotecaNombre = bibliotecaSelect.options[bibliotecaSelect.selectedIndex].text;
-
-  // Validar que se haya seleccionado una biblioteca
-  if (!bibliotecaId) {
-    alert('Por favor selecciona una biblioteca');
-    return;
-  }
-
-  // Establecer datos en el modal de confirmación
-  document.getElementById('prestamoLibroTitulo').textContent = libroTitulo;
-  document.getElementById('prestamoBiblioteca').textContent = bibliotecaNombre;
-  document.getElementById('prestamoLibroId').value = libroId;
-  document.getElementById('prestamoBibliotecaId').value = bibliotecaId;
-
-  // Ocultar modal de detalle y mostrar modal de confirmación
-  const modalDetalle = bootstrap.Modal.getInstance(modalDetalleLibro);
-  modalDetalle.hide();
-  
-  const modalConfirmacion = new bootstrap.Modal(document.getElementById('confirmPrestamoModal'));
-  modalConfirmacion.show();
-}
-
-// Función para realizar el préstamo
-async function realizarPrestamo() {
-  try {
-    const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
-    const libroId = document.getElementById('prestamoLibroId').value;
-    const bibliotecaId = document.getElementById('prestamoBibliotecaId').value;
-    
-    // Crear objeto para enviar al backend
-    const fechaActual = new Date().toISOString().split('T')[0];
-    const prestamo = {
-      usuario_id: usuarioActual.id,
-      biblioteca_libro_id: bibliotecaId, // Aquí debería ser el ID de la relación biblioteca_libro
-      fecha_prestamo: fechaActual,
-      fecha_devolucion: null
-    };
-
-    // Realizar la petición
-    const response = await fetch('/api/prestamos', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(prestamo)
-    });
-
-    if (!response.ok) {
-      throw new Error('Error al realizar el préstamo');
-    }
-
-    // Cerrar modal de confirmación
-    const modal = bootstrap.Modal.getInstance(document.getElementById('confirmPrestamoModal'));
-    modal.hide();
-
-    // Mostrar mensaje de éxito
-    alert('Préstamo realizado correctamente');
-    
-    // Redirigir a la página de perfil
-    window.location.href = 'perfil.html';
-  } catch (error) {
-    console.error('Error:', error);
-    alert('No se pudo completar el préstamo. Por favor, inténtalo de nuevo.');
-  }
 }
 
 // Modal detalles libro
@@ -438,21 +248,25 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const r = await fetch(`/api/libros/${id}`);
       if(!r.ok) throw new Error(r.status);
-      const libro = await r.json();
-      
-      fields.title.textContent = libro.titulo;
-      fields.author.textContent = libro.autor;
-      fields.isbn.textContent = libro.isbn || 'N/A';
-      fields.desc.textContent = libro.descripcion || 'Sin descripción disponible.';
-      if(libro.imagen_url) fields.img.src = libro.imagen_url;
-      if(fields.cat) fields.cat.textContent = libro.categoria;
-      if(fields.avail) {
-        fields.avail.textContent = libro.disponibilidad ? 'Disponible' : 'No disponible';
-        fields.avail.className = libro.disponibilidad ? 'text-success' : 'text-danger';
-      }
-    } catch(e) {
-      console.error('Error al cargar detalle:', e);
-      fields.title.textContent = 'Error al cargar libro';
+      const b = await r.json();
+      fields.title.textContent = b.titulo;
+      fields.author.textContent= b.autor;
+      fields.isbn.textContent  = b.isbn||'N/A';
+      fields.img.src           = b.imagen_url||fields.img.src;
+      fields.desc.textContent  = b.descripcion||'Sin descripción.';
+      fields.cat.textContent   = b.categoria;
+      fields.avail.textContent = b.disponibilidad?'Disponible':'Prestado';
+    } catch(err) {
+      console.error('Modal err:', err);
+      fields.title.textContent='Error';
+      fields.desc.textContent='No se pudo cargar.';
     }
+  });
+
+  modalEl.addEventListener('shown.bs.modal', ()=>{
+    modalEl.querySelector('.btn-close')?.blur();
+  });
+  modalEl.addEventListener('hidden.bs.modal', ()=>{
+    modalEl.querySelector('.btn-close')?.blur();
   });
 });
